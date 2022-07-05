@@ -1,7 +1,13 @@
-use actix_web::{App, HttpServer, middleware::Logger};
-use rs_crud_actix::app_config;
+use actix_web::{App, HttpServer, middleware::Logger, web};
+use rs_crud_actix::{app_config};
 extern crate env_logger;
 
+mod settings;
+
+#[allow(unused)]
+struct AppDataEnv {
+    env_settings: settings::Settings
+}
 
 #[actix_web::main]
 pub async fn main() -> std::io::Result<()>{
@@ -11,12 +17,17 @@ pub async fn main() -> std::io::Result<()>{
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
 
+    let config_env = settings::Settings::new();
+
     HttpServer::new(|| {
         App::new()
+            .app_data(web::Data::new(AppDataEnv{
+                env_settings: settings::Settings::new().unwrap()
+            }))
             .configure(app_config)
             .wrap(Logger::new("%t: %a %{User-Agent}i"))
     })
-        .bind(("0.0.0.0", 8000))?
+        .bind((config_env.unwrap().server.ip, 8000))?
         .run()
         .await
 }
