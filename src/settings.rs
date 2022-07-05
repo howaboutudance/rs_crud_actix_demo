@@ -25,7 +25,7 @@ pub struct Settings {
 
 impl Settings {
     pub fn new() -> Result<Self, ConfigError> {
-        let run_env = env::var("ENV").unwrap_or_else(|_| "dev".into());
+        let run_env = env::var("APP_ENV").unwrap_or_else(|_| "dev".into());
 
         let s = Config::builder()
             .add_source(File::with_name("./config/default"))

@@ -17,7 +17,7 @@ pub async fn main() -> std::io::Result<()>{
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
 
-    let config_env = settings::Settings::new();
+    let config_env = settings::Settings::new().unwrap();
 
     HttpServer::new(|| {
         App::new()
@@ -27,7 +27,7 @@ pub async fn main() -> std::io::Result<()>{
             .configure(app_config)
             .wrap(Logger::new("%t: %a %{User-Agent}i"))
     })
-        .bind((config_env.unwrap().server.ip, 8000))?
+        .bind((config_env.server.ip, 8000))?
         .run()
         .await
 }
