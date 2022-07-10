@@ -27,3 +27,34 @@ impl Responder for ResponseEvent {
             .body(body)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use serde_json::json;
+    use super::*;
+    use uuid::Uuid;
+
+    fn setup(expected_uuid: Uuid) -> ResponseEvent {
+
+        let res = ResponseEvent{id: expected_uuid, name: "foo".to_string(), doc_type: "bar".to_string()};
+        res
+    }
+
+    #[test]
+    fn test_response_event_new(){
+        let expected_uuid = Uuid::new_v4();
+        let res = setup(expected_uuid);
+
+        assert_eq!(res.id, expected_uuid);
+        assert_eq!(res.name, "foo");
+        assert_eq!(res.doc_type, "bar");
+    }
+
+   #[test]
+    fn test_reponse_event_json_deserialize(){
+       let expected_uuid = Uuid::new_v4();
+       let res = setup(expected_uuid);
+       assert_eq!(json!(res).to_string(),
+                  format!("{{\"doc_type\":\"bar\",\"id\":\"{}\",\"name\":\"foo\"}}", expected_uuid.to_string()));
+   }
+}

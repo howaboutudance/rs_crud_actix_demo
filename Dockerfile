@@ -14,5 +14,7 @@ RUN cargo build --release
 
 FROM docker.io/library/debian:buster-slim as app
 
+ENV APP_ENV prod
+COPY ./config/. ./config/
 COPY --from=build /rs_crud_actix/target/release/rs_crud_actix .
 ENTRYPOINT ["./rs_crud_actix"]
