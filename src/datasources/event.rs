@@ -24,7 +24,7 @@ impl Responder for ResponseEvent {
         let body = serde_json::to_string(&self).unwrap();
         HttpResponse::Ok()
             .content_type(ContentType::json())
-            .body(body)
+            .json(body)
     }
 }
 

@@ -1,5 +1,5 @@
 use actix_web::{App, HttpServer, middleware::Logger, web};
-use rs_crud_actix::{app_config};
+use rs_crud_actix::{app_config, metrics};
 extern crate env_logger;
 
 mod settings;
@@ -19,11 +19,14 @@ pub async fn main() -> std::io::Result<()>{
 
     let config_env = settings::Settings::new().unwrap();
 
+
     HttpServer::new(|| {
+        let  promethesus_metrics = metrics::create_app_metrics();
         App::new()
             .app_data(web::Data::new(AppDataEnv{
                 env_settings: settings::Settings::new().unwrap()
             }))
+            .wrap(promethesus_metrics)
             .configure(app_config)
             .wrap(Logger::new("%t: %a %{User-Agent}i"))
     })

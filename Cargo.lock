@@ -1110,6 +1110,7 @@ dependencies = [
  "diesel",
  "dotenv",
  "env_logger",
+ "lazy_static",
  "prometheus",
  "serde",
  "serde_derive",

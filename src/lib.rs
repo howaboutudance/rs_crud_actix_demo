@@ -3,8 +3,7 @@
 use actix_web::{web};
 pub mod routers;
 pub mod datasources;
-mod metrics;
-
+pub mod metrics;
 
 pub fn app_config(cfg: &mut web::ServiceConfig) {
     cfg
