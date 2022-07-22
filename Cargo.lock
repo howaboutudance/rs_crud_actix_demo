@@ -1107,6 +1107,7 @@ dependencies = [
  "actix-web",
  "actix-web-prom",
  "config",
+ "derive_more",
  "diesel",
  "dotenv",
  "env_logger",

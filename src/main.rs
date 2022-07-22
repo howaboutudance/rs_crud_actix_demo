@@ -1,5 +1,7 @@
 use actix_web::{App, HttpServer, middleware::Logger, web};
-use rs_crud_actix::{app_config, metrics};
+use actix_web::http::StatusCode;
+use actix_web::middleware::ErrorHandlers;
+use rs_crud_actix::{app_config, metrics, add_json_error_header};
 extern crate env_logger;
 
 mod settings;
@@ -26,6 +28,7 @@ pub async fn main() -> std::io::Result<()>{
             .app_data(web::Data::new(AppDataEnv{
                 env_settings: settings::Settings::new().unwrap()
             }))
+            .wrap(ErrorHandlers::new().handler(StatusCode::NOT_FOUND, add_json_error_header))
             .wrap(promethesus_metrics)
             .configure(app_config)
             .wrap(Logger::new("%t: %a %{User-Agent}i"))

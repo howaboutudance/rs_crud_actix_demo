@@ -37,12 +37,15 @@ pub fn event_service_factory() -> Scope {
 #[cfg(test)]
 mod tests {
     use actix_web::{App, HttpResponse, test, web, body};
-    use actix_web::http::Method;
+    use actix_web::http::{Method, StatusCode};
+    use actix_web::middleware::ErrorHandlers;
+    use crate::add_json_error_header;
     use super::*;
 
     #[actix_web::test]
     async fn test_get_event_success() {
         let app = test::init_service(App::new()
+            .wrap(ErrorHandlers::new().handler(StatusCode::NOT_FOUND, add_json_error_header))
             .service(
                 web::scope("/event")
                     .service(get_events)
@@ -57,6 +60,8 @@ mod tests {
     #[actix_web::test]
     async fn test_post_event__no_payload() {
         let app = test::init_service(App::new()
+            .wrap(ErrorHandlers::new().handler(StatusCode::NOT_FOUND, add_json_error_header))
+            .wrap(ErrorHandlers::new().handler(StatusCode::BAD_REQUEST, add_json_error_header))
             .service(
                 web::scope("/event")
                     .service(create_event)
@@ -74,6 +79,7 @@ mod tests {
     #[actix_web::test]
     async fn test_post_event__with_payload() {
         let app = test::init_service(App::new()
+            .wrap(ErrorHandlers::new().handler(StatusCode::NOT_FOUND, add_json_error_header))
             .service(
                 web::scope("/event")
                     .service(create_event)
