@@ -1,7 +1,8 @@
-use actix_web::{web, get, post, Responder, Result, Scope};
+use actix_web::{get, post, Responder, Result, Scope, web};
 use uuid::Uuid;
-use crate::datasources::event::{ResponseEvent, RequestEvent};
 
+use crate::datasources::event::{RequestEvent, ResponseEvent};
+use crate::metrics::EVENT_CREATE_COUNTER;
 
 #[get("/")]
 async fn get_events() -> Result<impl Responder> {
@@ -10,13 +11,14 @@ async fn get_events() -> Result<impl Responder> {
             ResponseEvent {
                 id: Uuid::new_v4(),
                 name: "Flammable".to_string(),
-                doc_type: "Calendar".to_string()
+                doc_type: "Calendar".to_string(),
             }
-    ))
+        ))
 }
 
 #[post("/")]
 async fn create_event(event: web::Json<RequestEvent>) -> impl Responder {
+    EVENT_CREATE_COUNTER.with_label_values(&["true", "/event/"]).inc();
     ResponseEvent {
         id: Uuid::new_v4(),
         name: event.name.clone(),
@@ -25,7 +27,7 @@ async fn create_event(event: web::Json<RequestEvent>) -> impl Responder {
 }
 
 pub fn event_service_factory() -> Scope {
-    web::scope( "/event")
+    web::scope("/event")
         .service(get_events)
         .service(create_event)
 }
